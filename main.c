@@ -6,6 +6,8 @@
 #include <locale.h>
 
 char username[50], password[50];
+int username_match = 0;
+int password_match = 0;
 char cwd[PATH_MAX];
 void show_login()
 {
@@ -45,7 +47,43 @@ void show_login()
                     continue;
                 }
                 user_data_column = strtok(line, ",");
-                printf("Ok");
+                int current_column = 1;
+                while (user_data_column != NULL)
+                {
+                    if (current_column == 1)
+                    {
+                        for (int typed_username_index = 0; typed_username_index < sizeof(user_data_column); typed_username_index++)
+                        {
+
+                            if (username[typed_username_index] == user_data_column[typed_username_index])
+                            {
+                                username_match = 1;
+                            }
+                            else
+                            {
+                                username_match = 0;
+                                break;
+                            }
+                        }
+                    }
+                    else if (current_column == 2)
+                    {
+                        for (int typed_password_index = 0; typed_password_index < sizeof(user_data_column); typed_password_index++)
+                        {
+                            if (password[typed_password_index] == user_data_column[typed_password_index])
+                            {
+                                password_match = 1;
+                            }
+                            else
+                            {
+                                password_match = 0;
+                                break;
+                            }
+                        }
+                    }
+                    current_column++;
+                    user_data_column = strtok(NULL, ",");
+                }
             }
         }
     }
@@ -55,6 +93,26 @@ void show_login()
         exit(1);
     }
     fclose(users_list);
+    if (username_match == 1 && password_match == 1)
+    {
+        printf("Usuário autenticado\n");
+#ifdef WIN32
+        system("pause");
+#else
+        system("read -p \"Pressione enter para sair...\" saindo");
+#endif
+        exit(1);
+    }
+    else
+    {
+        printf("Usuário não autorizado! Login ou senha incorretos\n");
+#ifdef WIN32
+        system("pause");
+#else
+        system("read -p \"Pressione enter para sair\" saindo");
+#endif
+        exit(1);
+    }
 }
 
 int main()
