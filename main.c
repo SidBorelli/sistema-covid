@@ -8,6 +8,7 @@
 char username[50], password[50];
 int username_match = 0;
 int password_match = 0;
+int is_authorized = 0;
 char cwd[PATH_MAX];
 void show_login()
 {
@@ -27,7 +28,6 @@ void show_login()
     char *buffer = malloc(file_length);
     char line[PATH_MAX];
     int line_counter = 0;
-    int is_authorized = 0;
 
     printf("\bLogin\n");
     printf("Nome do usuário: ");
@@ -48,13 +48,13 @@ void show_login()
                 }
                 user_data_column = strtok(line, ",");
                 int current_column = 1;
+
                 while (user_data_column != NULL)
                 {
                     if (current_column == 1)
                     {
-                        for (int typed_username_index = 0; typed_username_index < sizeof(user_data_column); typed_username_index++)
+                        for (int typed_username_index = 0; typed_username_index < strlen(user_data_column); typed_username_index++)
                         {
-
                             if (username[typed_username_index] == user_data_column[typed_username_index])
                             {
                                 username_match = 1;
@@ -68,7 +68,7 @@ void show_login()
                     }
                     else if (current_column == 2)
                     {
-                        for (int typed_password_index = 0; typed_password_index < sizeof(user_data_column); typed_password_index++)
+                        for (int typed_password_index = 0; typed_password_index < strlen(user_data_column); typed_password_index++)
                         {
                             if (password[typed_password_index] == user_data_column[typed_password_index])
                             {
@@ -109,14 +109,34 @@ void show_login()
 #ifdef WIN32
         system("pause");
 #else
-        system("read -p \"Pressione enter para sair\" saindo");
+        system("read -p \"Pressione enter para sair....\" saindo");
 #endif
         exit(1);
     }
 }
 
+void show_menu()
+{
+    if (is_authorized == 0)
+    {
+        printf("Usuário não autorizado!\n");
+#ifdef WIN32
+        system("pause");
+#else
+        system("read -p \"Pressione enter para sair....\" saindo");
+#endif
+        exit(1);
+    }
+}
+
+void show_menu()
+{
+    verify_if_is_authorized();
+}
+
 int main()
 {
     show_login();
+    show_menu();
     return 0;
 }
