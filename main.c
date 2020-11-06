@@ -146,6 +146,53 @@ void verify_if_is_authorized()
     }
 }
 
+void get_all_records(){
+     char *ocurrences_data_column;
+    clear();
+    verify_if_is_authorized();
+    printf(ANSI_COLOR_BLUE "Ferramenta de Monitoramento de Casos de COVID-19" ANSI_COLOR_RESET "\n");
+    for (int vertical_line_counter = 0; vertical_line_counter < 30; vertical_line_counter++)
+    {
+        printf(ANSI_COLOR_BLUE "\u2500");
+    }
+    printf(ANSI_COLOR_RESET, "\n");
+    getcwd(cwd, sizeof(cwd));
+    strcat(cwd, "/data/Ocurrences.csv");
+    FILE *ocurrences_list = fopen(cwd, "r");
+    char line[PATH_MAX];
+    if (sizeof(ocurrences_list) <= 1)
+    {
+        printf(ANSI_COLOR_RED "\nNenhum registro cadastrado" ANSI_COLOR_RESET "\n\n");
+    }
+    else
+    {
+        printf(ANSI_COLOR_CYAN "\nLista de Todos os Registros: " ANSI_COLOR_RESET "\n\n");
+        int line_counter = 0;
+        while (fgets(line, sizeof(line), ocurrences_list) != NULL)
+        {
+            if (line_counter == 0)
+            {
+                line_counter++;
+                continue;
+            }
+            int ocurrences_column_counter = 1;
+            printf(ANSI_COLOR_CYAN "Id: 1 - " ANSI_COLOR_RESET);
+            ocurrences_data_column = strtok(line, ",");
+            while (ocurrences_data_column != NULL)
+            {
+                printf("%s | ", ocurrences_data_column);
+                ocurrences_data_column = strtok(NULL, ",\n");
+            }
+            line_counter++;
+        }
+#ifdef WIN32
+        system("pause");
+#else
+        system("read -p \"Pressione enter para sair...\" saindo");
+#endif
+    }   
+}
+
 void show_menu()
 {
     char *ocurrences_data_column;
@@ -167,7 +214,7 @@ void show_menu()
     }
     else
     {
-        printf(ANSI_COLOR_CYAN "\nLista de Registros: " ANSI_COLOR_RESET "\n\n");
+        printf(ANSI_COLOR_CYAN "\nLista de Registros (5 primeiros): " ANSI_COLOR_RESET "\n\n");
         int line_counter = 0;
         while (fgets(line, sizeof(line), ocurrences_list) != NULL)
         {
@@ -187,7 +234,7 @@ void show_menu()
             line_counter++;
         }
     }
-    int selected_option;
+    char selected_option[1];
     for (int vertical_line_counter = 0; vertical_line_counter < 30; vertical_line_counter++)
     {
         printf(ANSI_COLOR_BLUE "\u2500");
@@ -199,7 +246,10 @@ void show_menu()
     printf(ANSI_COLOR_YELLOW "  3 - Inserir novo caso" ANSI_COLOR_RESET "\n");
     printf(ANSI_COLOR_YELLOW "  0 - Sair" ANSI_COLOR_RESET "\n");
     printf("\n\nSelecione o número de uma opção do menu: ");
-    fgets(&selected_option, sizeof(selected_option), stdin);
+    fgets(selected_option, 10, stdin);
+    if(selected_option[0] == '1'){
+        get_all_records();
+    }
 }
 
 int main()
