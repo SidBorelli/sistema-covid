@@ -195,7 +195,7 @@ void insert_new_record()
     clear();
     get_header();
     printf("\nInserindo um novo caso de COVID-19\n");
-    char comorbity_option[2];
+    char comorbity_option[3];
     printf("Nome Completo: ");
     fgets(&new_record.name, sizeof(new_record.name), stdin);
     printf("CPF: ");
@@ -215,16 +215,16 @@ void insert_new_record()
     switch (comorbity_option[0])
     {
     case '1':
-        strcpy(new_record.comorbidities, 'Diabetes');
+        strcpy(new_record.comorbidities, "Diabetes");
         break;
     case '2':
-        strcpy(new_record.comorbidities, 'Obesidade');
+        strcpy(new_record.comorbidities, "Obesidade");
         break;
     case '3':
-        strcpy(new_record.comorbidities, 'Hipertensão');
+        strcpy(new_record.comorbidities, "Hipertensão");
         break;
     case '4':
-        strcpy(new_record.comorbidities, 'Tuberculose');
+        strcpy(new_record.comorbidities, "Tuberculose");
         break;
     default:
         strcpy(new_record.comorbidities, 'Outros');
@@ -358,7 +358,7 @@ void show_menu()
     char selected_option[PATH_MAX];
     verify_if_is_authorized();
     get_header();
-    // get_risk_cases();
+    get_risk_cases();
     printf(ANSI_COLOR_YELLOW "\nOpções:" ANSI_COLOR_RESET "\n\n");
     printf(ANSI_COLOR_YELLOW "  1 - Ver todos os registros" ANSI_COLOR_RESET "\n");
     printf(ANSI_COLOR_YELLOW "  2 - Ver casos de risco" ANSI_COLOR_RESET "\n");
