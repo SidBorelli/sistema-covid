@@ -30,6 +30,69 @@ typedef struct
     char diagnosticDate[50];
     char comorbidities[50];
 } Ocurrence;
+
+char *remove_line_break(char *value)
+{
+    char *new_value;
+    for (int counter = 0; value < strlen(value); counter++)
+    {
+        if (value[counter] != '\n')
+        {
+            new_value[counter] = value[counter];
+        }
+    }
+    return new_value;
+}
+
+int is_valid_comorbity(char *value)
+{
+}
+
+void get_risk_cases()
+{
+    clear();
+    char *ocurrences_data_column;
+    int risk_cases_counter;
+    verify_if_is_authorized();
+    get_header();
+    getcwd(cwd, sizeof(cwd));
+    strcat(cwd, "/data/Ocurrences.csv");
+    FILE *ocurrences_list = fopen(cwd, "r");
+    char line[PATH_MAX];
+    if (sizeof(ocurrences_list) <= 1)
+    {
+        printf(ANSI_COLOR_CYAN "\nLista de Registros: " ANSI_COLOR_RESET "\n\n");
+        int line_counter = 0;
+        while (fgets(line, sizeof(line), ocurrences_list) != NULL)
+        {
+            if (line_counter == 0)
+            {
+                line_counter++;
+                continue;
+            }
+            if (line_counter < 10)
+            {
+                printf(ANSI_COLOR_CYAN "\nId: %d - " ANSI_COLOR_RESET, line_counter);
+            }
+            else
+            {
+                printf(ANSI_COLOR_CYAN "\nId:%d - " ANSI_COLOR_RESET, line_counter);
+            }
+            int ocurrences_column_counter = 1;
+            ocurrences_data_column = strtok(line, ",");
+            while (ocurrences_data_column != NULL)
+            {
+                if (ocurrences_column_counter == 8 && is_valid_comorbity(ocurrences_data_column))
+                {
+                }
+            }
+            line_counter++;
+        }
+    }
+    pause_system();
+    show_menu();
+}
+
 void show_login()
 {
     typedef struct
@@ -39,10 +102,9 @@ void show_login()
     } * user;
     char *user_data_column;
     user *user_data;
-
+    ;
     getcwd(cwd, sizeof(cwd));
     strcat(cwd, "/data/Users.csv");
-
     FILE *users_list = fopen(cwd, "r");
     long file_length = ftell(users_list);
     char *buffer = malloc(file_length);
@@ -121,6 +183,7 @@ void show_login()
     }
     else
     {
+        printf("Usuário não autorizado!\n");
         pause_system();
         exit(1);
     }
@@ -132,20 +195,56 @@ void insert_new_record()
     clear();
     get_header();
     printf("\nInserindo um novo caso de COVID-19\n");
+    char comorbity_option[2];
     printf("Nome Completo: ");
     fgets(&new_record.name, sizeof(new_record.name), stdin);
     printf("CPF: ");
     fgets(&new_record.document, sizeof(new_record.document), stdin);
+    printf("Telefone: ");
+    fgets(&new_record.phone, sizeof(new_record.phone), stdin);
     printf("Endereço: ");
     fgets(&new_record.address, sizeof(new_record.address), stdin);
-    printf("Data de Nascimento: ");
+    printf("Data de Nascimento (dd/mm/yyyy): ");
     fgets(&new_record.birthdate, sizeof(new_record.birthdate), stdin);
     printf("E-mail: ");
     fgets(&new_record.email, sizeof(new_record.email), stdin);
-    printf("Data de Diagnóstico: ");
+    printf("Data de Diagnóstico (dd/mm/yyyy): ");
     fgets(&new_record.diagnosticDate, sizeof(new_record.diagnosticDate), stdin);
-    printf("Comorbidade: ");
-    fgets(&new_record.comorbidities, sizeof(new_record.comorbidities), stdin);
+    printf("Comorbidade (1- Diabetes, 2 - Obesidade, 3 - Hipertensão, 4 - Tuberculose, 5 - Outros):");
+    fgets(&comorbity_option, sizeof(comorbity_option), stdin);
+    switch (comorbity_option[0])
+    {
+    case '1':
+        strcpy(new_record.comorbidities, 'Diabetes');
+        break;
+    case '2':
+        strcpy(new_record.comorbidities, 'Obesidade');
+        break;
+    case '3':
+        strcpy(new_record.comorbidities, 'Hipertensão');
+        break;
+    case '4':
+        strcpy(new_record.comorbidities, 'Tuberculose');
+        break;
+    default:
+        strcpy(new_record.comorbidities, 'Outros');
+        break;
+    }
+
+    strcpy(new_record.name, strtok(new_record.name, "\n"));
+    strcpy(new_record.address, strtok(new_record.address, "\n"));
+    strcpy(new_record.phone, strtok(new_record.phone, "\n"));
+    strcpy(new_record.birthdate, strtok(new_record.birthdate, "\n"));
+    strcpy(new_record.diagnosticDate, strtok(new_record.diagnosticDate, "\n"));
+    strcpy(new_record.document, strtok(new_record.document, "\n"));
+    strcpy(new_record.email, strtok(new_record.email, "\n"));
+
+    getcwd(cwd, sizeof(cwd));
+    strcat(cwd, "/data/Ocurrences.csv");
+    FILE *ocurrences_file = fopen(cwd, "a");
+    fprintf(ocurrences_file, "\n%s,%s,%s,%s,%s,%s,%s,%s", new_record.name, new_record.phone, new_record.document, new_record.address, new_record.birthdate, new_record.email, new_record.diagnosticDate, new_record.comorbidities);
+    fclose(ocurrences_file);
+    printf(ANSI_COLOR_GREEN "Novo Registro inserido com sucesso!" ANSI_COLOR_RESET);
     pause_system();
     show_menu();
 }
@@ -259,6 +358,7 @@ void show_menu()
     char selected_option[PATH_MAX];
     verify_if_is_authorized();
     get_header();
+    // get_risk_cases();
     printf(ANSI_COLOR_YELLOW "\nOpções:" ANSI_COLOR_RESET "\n\n");
     printf(ANSI_COLOR_YELLOW "  1 - Ver todos os registros" ANSI_COLOR_RESET "\n");
     printf(ANSI_COLOR_YELLOW "  2 - Ver casos de risco" ANSI_COLOR_RESET "\n");
