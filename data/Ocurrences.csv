@@ -1,2 +1,1 @@
-Nome,CPF,Telefone,Endereço,Data de Nascimento,Email,Data de Diagnóstico,Comorbidades
-Irineu de Onde,10292991929838,1209981992,Rua Bastos - 1014,10/05/2001,irineu@email.com,10/02/2020,Diabetes
+Nome,CPF,CEP,Telefone,Endereço,Data de Nascimento,Email,Data de Diagnóstico,Comorbidades
