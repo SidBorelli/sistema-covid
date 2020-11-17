@@ -30,7 +30,7 @@ typedef struct
     char email[50];
     char diagnosticDate[50];
     int age;
-    char comorbidities;
+    char comorbidities[50];
 } Ocurrence;
 int is_valid_comorbity(char *value)
 {
@@ -51,10 +51,11 @@ int is_valid_comorbity(char *value)
     }
 }
 
-int is_valid_age(char *current_date, char *birth_date)
+int is_valid_age(char *current_date, char *birth_date, Ocurrence * data)
 {
     int current_year = atoi(&current_date[strlen(current_date) - 4]);
     int born_year = atoi(&birth_date[strlen(birth_date) - 4]);
+    data->age = current_year - born_year;
     int result = (current_year - born_year > 60 || current_year - born_year < 5) ? 1 : 0;
     return result;
 }
@@ -231,24 +232,26 @@ void insert_new_record()
         break;
     }
 
-    strcpy(new_record.name, strtok(new_record.name, "\n"));
-    strcpy(new_record.cep, strtok(new_record.cep, "\n"));
-    strcpy(new_record.address, strtok(new_record.address, "\n"));
-    strcpy(new_record.phone, strtok(new_record.phone, "\n"));
-    strcpy(new_record.birthdate, strtok(new_record.birthdate, "\n"));
-    strcpy(new_record.diagnosticDate, strtok(new_record.diagnosticDate, "\n"));
-    strcpy(new_record.document, strtok(new_record.document, "\n"));
-    strcpy(new_record.email, strtok(new_record.email, "\n"));
-
-    int is_risk_case = (is_valid_age(new_record.diagnosticDate, new_record.birthdate) == 1 && is_valid_comorbity(new_record.comorbidities) == 1) ? 1 : 0;
+    new_record.name[strcspn(new_record.name, "\n")] = '\0';
+    new_record.address[strcspn(new_record.address, "\n")] = '\0';
+    new_record.phone[strcspn(new_record.phone, "\n")] = '\0';
+    new_record.birthdate[strcspn(new_record.birthdate, "\n")] = '\0';
+    new_record.diagnosticDate[strcspn(new_record.diagnosticDate, "\n")] = '\0';
+    new_record.document[strcspn(new_record.document, "\n")] = '\0';
+    new_record.email[strcspn(new_record.email, "\n")] = '\0';
+    int is_risk_case = (is_valid_age(new_record.diagnosticDate, new_record.birthdate, &new_record) == 1 || is_valid_comorbity(new_record.comorbidities) == 1) ? 1 : 0;
     getcwd(cwd, sizeof(cwd));
-
     if (is_risk_case == 1)
     {
+        int int_age = new_record.age;
+        char str_age[4];
+        sprintf(str_age, "%d", int_age);
         strcat(cwd, "/data/RiskCases.csv");
-        FILE *ocurrences_file = fopen(cwd, "a");
-        fprintf(ocurrences_file, "\n%s,%s,%d", new_record.name, new_record.cep, new_record.age);
-        fclose(ocurrences_file);
+        FILE *risk_cases_file = fopen(cwd, "a");
+        char str_risk_line[200];
+        
+        fprintf(risk_cases_file, "\n%s", str_risk_line);
+        fclose(risk_cases_file);
         printf(ANSI_COLOR_GREEN "Novo Registro inserido com sucesso!" ANSI_COLOR_RESET);
         printf(ANSI_COLOR_RED "Atenção! Este paciente pertence aos grupos de risco!" ANSI_COLOR_RESET);
     }
